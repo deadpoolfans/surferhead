@@ -1,42 +1,52 @@
-import { Readable } from 'stream';
-import { ClientHttp2Stream } from 'http2';
-import { noop } from 'lodash';
+import { Readable } from "node:stream";
 
-const SESSION_PING_TIMEOUT = 2_000;
+// BUG: Not implemented in Bun, tracking <https://github.com/oven-sh/bun/issues/887>
+// Should not be an issue here though since it's just a type import.
+import type { ClientHttp2Stream } from "node:http2";
 
-export default function (s: Readable, contentLength?: string): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-        let currentLength  = 0;
-        const chunks       = [] as Buffer[];
-        const finalLength  = typeof contentLength === 'string' ? parseInt(contentLength, 10) : null;
-        const http2session = finalLength === null && 'session' in s &&
-                             (s as ClientHttp2Stream).session || null;
-        let isResolved     = false;
-        let timeout: NodeJS.Timeout;
+const promisifyStream = (stream: Readable, contentLength?: string): Promise<Buffer> => new Promise((resolve, reject) => {
+  const chunks: Buffer[] = [];
 
-        s.on('data', (chunk: Buffer) => {
-            chunks.push(chunk);
-            currentLength += chunk.length;
+  let currentLocationInLength = 0;
+  const finalLength = typeof contentLength === "string" ? parseInt(contentLength, 10) : null;
 
-            if (currentLength === finalLength) {
-                isResolved = true;
-                resolve(Buffer.concat(chunks));
-            }
+  // If the session is using `http2`, we get the session from the stream.
+  const http2session = finalLength === null && "session" in stream && (stream as ClientHttp2Stream).session || null;
 
-            if (http2session) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => http2session.ping(noop), SESSION_PING_TIMEOUT);
-            }
-        });
-        s.once('end', () => {
-            clearTimeout(timeout);
+  let isResolved = false;
+  let timeout: ReturnType<typeof setTimeout>;
 
-            if (!isResolved)
-                resolve(Buffer.concat(chunks));
-        });
-        s.once('error', error => {
-            clearTimeout(timeout);
-            reject(error);
-        });
-    });
-}
+  stream.on("data", (chunk: Buffer) => {
+    chunks.push(chunk);
+    currentLocationInLength += chunk.length;
+
+    if (currentLocationInLength === finalLength) {
+      isResolved = true;
+      resolve(Buffer.concat(chunks));
+    }
+
+    if (http2session !== null) {
+      clearTimeout(timeout);
+
+      const SESSION_PING_TIMEOUT = 2_000;
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      const emptyFunction = () => {};
+
+      timeout = setTimeout(() => http2session.ping(emptyFunction), SESSION_PING_TIMEOUT);
+    }
+  });
+
+  stream.once("end", () => {
+    clearTimeout(timeout);
+
+    if (!isResolved)
+      resolve(Buffer.concat(chunks));
+  });
+
+  stream.once("error", (error) => {
+    clearTimeout(timeout);
+    reject(error);
+  });
+});
+
+export default promisifyStream;
