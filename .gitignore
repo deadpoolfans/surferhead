@@ -1,6 +1,5 @@
-test/playground/upload-storage
+# Dependencies
 node_modules
-.idea
-.vscode
+
+# Builds
 lib
-package-lock.json
