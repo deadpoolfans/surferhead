@@ -20,7 +20,7 @@ In addition, the proxied web page does not know that it is opened under a proxy.
 
 ## Documentation
 
-Read our [documentation API in the dedicated `docs`` folder](./docs/) to learn how to use this package.
+Read our [documentation API in the dedicated `docs` folder](./docs/) to learn how to use this package.
 
 ## Contributing
 
