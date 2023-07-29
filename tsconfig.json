@@ -5,7 +5,7 @@
     "esModuleInterop": true,
     "allowJs": true,
     "checkJs": false,
-    "strict": false,
+    "strict": true,
     "newLine": "lf",
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
