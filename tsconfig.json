@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "ES6",
     "module": "commonjs",
     "esModuleInterop": true,
     "allowJs": true,
     "checkJs": false,
-    "types": ["node"],
     "strict": false,
     "newLine": "lf",
     "allowSyntheticDefaultImports": true,
