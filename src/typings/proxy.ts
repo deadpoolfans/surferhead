@@ -23,23 +23,19 @@ export interface StaticContent {
     isShadowUIStylesheet?: boolean;
 }
 
-interface RouterOptions {
-    staticContentCaching?: object;
-}
-
-interface RequestTimeout {
+export interface RequestTimeout {
     page: number;
     ajax: number;
 }
 
-interface ProxyOptions {
-    hostname: string;
-    port1: number;
-    port2: number;
-    ssl?: object;
-    developmentMode?: boolean;
-    cache?: boolean;
-    disableHttp2?: boolean;
-    disableCrossDomain?: boolean;
-    nativeAutomation?: boolean;
+export interface ProxyOptions {
+  hostname: string;
+  port1: number;
+  port2: number;
+  ssl?: object;
+  developmentMode?: boolean;
+  cache?: boolean;
+  disableHttp2?: boolean;
+  disableCrossDomain?: boolean;
+  nativeAutomation?: boolean;
 }

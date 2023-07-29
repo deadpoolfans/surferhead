@@ -1,6 +1,7 @@
-import { ReadStream } from 'fs';
-import { IncomingHttpHeaders, OutgoingHttpHeaders } from 'http';
-import { RequestTimeout } from './proxy';
+import { ReadStream } from "node:fs";
+import { IncomingHttpHeaders, OutgoingHttpHeaders } from "node:http";
+
+import { RequestTimeout } from "./proxy";
 
 export interface WindowCredentials {
     domain?: string;
