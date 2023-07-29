@@ -3,19 +3,19 @@
 // Do not use any browser or node-specific API!
 // -------------------------------------------------------------
 
-import reEscape from '../../utils/regexp-escape';
-import INTERNAL_PROPS from '../../processing/dom/internal-properties';
-import INSTRUCTION from './instruction';
-import SERVICE_ROUTES from '../../proxy/service-routes';
-import { stringify as stringifyJSON } from '../../utils/json';
+import reEscape from "../../utils/regexp-escape";
+import INTERNAL_PROPS from "../../processing/dom/internal-properties";
+import INSTRUCTION from "./instruction";
+import SERVICE_ROUTES from "../../proxy/service-routes";
+import { stringifyJSON } from "../../utils/json";
 
-export const SCRIPT_PROCESSING_START_COMMENT      = '/*hammerhead|script|start*/';
-export const SCRIPT_PROCESSING_END_COMMENT        = '/*hammerhead|script|end*/';
-export const SCRIPT_PROCESSING_END_HEADER_COMMENT = '/*hammerhead|script|processing-header-end*/';
+export const SCRIPT_PROCESSING_START_COMMENT      = "/*hammerhead|script|start*/";
+export const SCRIPT_PROCESSING_END_COMMENT        = "/*hammerhead|script|end*/";
+export const SCRIPT_PROCESSING_END_HEADER_COMMENT = "/*hammerhead|script|processing-header-end*/";
 
-const STRICT_MODE_PLACEHOLDER     = '{strict-placeholder}';
-const SW_SCOPE_HEADER_VALUE       = '{sw-scope-header-value}';
-const WORKER_SETTINGS_PLACEHOLDER = '{worker-settings}';
+const STRICT_MODE_PLACEHOLDER     = "{strict-placeholder}";
+const SW_SCOPE_HEADER_VALUE       = "{sw-scope-header-value}";
+const WORKER_SETTINGS_PLACEHOLDER = "{worker-settings}";
 
 const IMPORT_WORKER_HAMMERHEAD = `
 if (typeof importScripts !== "undefined" && /\\[native code]/g.test(importScripts.toString())) {
@@ -27,7 +27,7 @@ if (typeof importScripts !== "undefined" && /\\[native code]/g.test(importScript
 const PROCESS_DOM_METHOD = `window['${INTERNAL_PROPS.processDomMethodName}'] && window['${INTERNAL_PROPS.processDomMethodName}']();`;
 
 function trim (val: string): string {
-    return val.replace(/\n(?!$)\s*/g, '');
+  return val.replace(/\n(?!$)\s*/g, "");
 }
 
 const NATIVE_AUTOMATION_HEADER = trim(`
@@ -84,22 +84,22 @@ const HEADER = trim(`
     ${SCRIPT_PROCESSING_END_HEADER_COMMENT}
 `);
 
-const HEADER_RE                 = new RegExp(`${reEscape(SCRIPT_PROCESSING_START_COMMENT)}[\\S\\s]+?${reEscape(SCRIPT_PROCESSING_END_HEADER_COMMENT)}\n?`, 'gi');
-const PROCESSING_END_COMMENT_RE = new RegExp(`\n?${ reEscape(SCRIPT_PROCESSING_END_COMMENT) }\\s*`, 'gi');
+const HEADER_RE                 = new RegExp(`${reEscape(SCRIPT_PROCESSING_START_COMMENT)}[\\S\\s]+?${reEscape(SCRIPT_PROCESSING_END_HEADER_COMMENT)}\n?`, "gi");
+const PROCESSING_END_COMMENT_RE = new RegExp(`\n?${ reEscape(SCRIPT_PROCESSING_END_COMMENT) }\\s*`, "gi");
 
 export function remove (code: string): string {
-    return code
-        .replace(HEADER_RE, '')
-        .replace(PROCESSING_END_COMMENT_RE, '');
+  return code
+    .replace(HEADER_RE, "")
+    .replace(PROCESSING_END_COMMENT_RE, "");
 }
 
 export function add (code: string, isStrictMode: boolean, swScopeHeaderValue?: string, nativeAutomation?: boolean, workerSettings?: any): string {
-    const targetHeader = nativeAutomation ? NATIVE_AUTOMATION_HEADER : HEADER;
+  const targetHeader = nativeAutomation ? NATIVE_AUTOMATION_HEADER : HEADER;
 
-    const header = targetHeader
-        .replace(STRICT_MODE_PLACEHOLDER, isStrictMode ? '"use strict";' : '')
-        .replace(SW_SCOPE_HEADER_VALUE, swScopeHeaderValue ? `var ${INSTRUCTION.swScopeHeaderValue} = ${stringifyJSON(swScopeHeaderValue)};` : '')
-        .replace(WORKER_SETTINGS_PLACEHOLDER, workerSettings ? JSON.stringify(workerSettings) : 'null');
+  const header = targetHeader
+    .replace(STRICT_MODE_PLACEHOLDER, isStrictMode ? '"use strict";' : "")
+    .replace(SW_SCOPE_HEADER_VALUE, swScopeHeaderValue ? `var ${INSTRUCTION.swScopeHeaderValue} = ${stringifyJSON(swScopeHeaderValue)};` : "")
+    .replace(WORKER_SETTINGS_PLACEHOLDER, workerSettings ? JSON.stringify(workerSettings) : "null");
 
-    return header + code + '\n' + SCRIPT_PROCESSING_END_COMMENT;
+  return header + code + "\n" + SCRIPT_PROCESSING_END_COMMENT;
 }
