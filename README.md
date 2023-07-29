@@ -18,6 +18,10 @@ In addition, the proxied web page does not know that it is opened under a proxy.
 * request events (`onRequest`, `onResponse`)
 * bypassing requests
 
+## Documentation
+
+Read our [documentation API in the dedicated `docs`` folder](./docs/) to learn how to use this package.
+
 ## Contributing
 
 Read our [Contributing Guide](./CONTRIBUTING.md) to learn how to contribute to the project.
